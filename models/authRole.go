@@ -3,8 +3,8 @@ package models
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"time"
 	_ "github.com/go-sql-driver/mysql"
+	"time"
 )
 
 type AuthRole struct {
@@ -90,7 +90,29 @@ func (m *AuthRole) BatchDelete(ids string) bool {
 	return true
 }
 
-// 保存角色
-func (m *AuthRole) Save(){
+// 创建角色
+func (m *AuthRole) Create(role *AuthRole) (int64, error){
 
+	o := orm.NewOrm()
+	id, err := o.Insert(role)
+
+	return id, err
+}
+
+// 更新角色
+func (m *AuthRole) Update(role *AuthRole) (int64, error){
+
+	o := orm.NewOrm()
+	id, err := o.Update(role, "RoleName", "RoleAliasName", "Descr", "UpdatedAt")
+
+	return id, err
+}
+
+// 删除角色
+func (m *AuthRole) Delete(id int64) (int64, error){
+
+	o := orm.NewOrm()
+	id, err := o.Delete(&AuthRole{Id:id})
+
+	return id, err
 }

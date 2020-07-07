@@ -25,3 +25,21 @@ func (m *AuthRoleNode) GetListByRoleId(roleId int) ([] *AuthRoleNode) {
 
 	return list
 }
+
+// 清空数据关联节点 通过 roleId
+func (m *AuthRoleNode) CleanAllByRoleId(RoleId int64) (error) {
+
+	o := orm.NewOrm()
+	_, err := o.QueryTable( new(AuthRoleNode) ).Filter("RoleId",RoleId).Delete()
+
+	return err
+}
+
+// 批量插入关联节点
+func (m *AuthRoleNode) CreateAuthNode(roleNode [] AuthRoleNode) (error){
+
+	o := orm.NewOrm()
+	_, err := o.InsertMulti(len(roleNode), roleNode)
+
+	return err
+}

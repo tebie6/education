@@ -53,13 +53,13 @@ func (this *AuthController) RoleSave(){
 	if id == 0 {
 
 		role.CreatedAt = time.Now()
-		if id, err := this.o.Insert(&role); err != nil {
+		if id, err := AuthRoleModel.Create(&role); err != nil {
 
 			this.renderJson(500, "角色保存失败"+err.Error(), nil)
 		} else {
 
 			// 清空旧数据关联节点 由于ORM 需要主键 所以不能使用 orm.Delete
-			_, err := this.o.QueryTable( new(models.AuthRoleNode) ).Filter("RoleId",id).Delete()
+			err := AuthRoleNodeModel.CleanAllByRoleId(id)
 			if err != nil {
 				beego.Error( err.Error() )
 			}
@@ -83,7 +83,10 @@ func (this *AuthController) RoleSave(){
 					//_v, _ := strconv.ParseInt(_v, 10, 64)
 					roleNode = append( roleNode, models.AuthRoleNode{NodeId: _v, RoleId:id})
 				}
-				this.o.InsertMulti(len(roleNode), roleNode)
+				err := AuthRoleNodeModel.CreateAuthNode(roleNode)
+				if err != nil {
+					beego.Error( err.Error() )
+				}
 			}
 
 			this.renderJson(200, "角色保存成功", map[string] string{"url":"/auth/roleList"})
@@ -92,14 +95,14 @@ func (this *AuthController) RoleSave(){
 	} else {
 
 		role.Id = id
-		_, err := this.o.Update(&role,"RoleName", "RoleAliasName", "Descr", "UpdatedAt");
+		_, err := AuthRoleModel.Update(&role)
 		if err != nil {
 
 			this.renderJson(500, "角色保存失败"+err.Error(), nil)
 		} else {
 
 			// 清空旧数据关联节点 由于ORM 需要主键 所以不能使用 orm.Delete
-			_, err := this.o.QueryTable( new(models.AuthRoleNode) ).Filter("RoleId",id).Delete()
+			err := AuthRoleNodeModel.CleanAllByRoleId(id)
 			if err != nil {
 				beego.Error( err.Error() )
 			}
@@ -120,14 +123,17 @@ func (this *AuthController) RoleSave(){
 					_v, _ := strconv.Atoi(_v)
 					roleNode = append( roleNode, models.AuthRoleNode{NodeId: _v, RoleId:id})
 				}
-				this.o.InsertMulti(len(roleNode), roleNode)
+				err := AuthRoleNodeModel.CreateAuthNode(roleNode)
+				if err != nil {
+					beego.Error( err.Error() )
+				}
 			}
 
 			this.renderJson(200, "角色保存成功", map[string] string{"url":"/auth/roleList"})
 		}
 	}
 
-	this.ServeJSON()
+	//this.ServeJSON()
 }
 
 // 角色列表
@@ -174,8 +180,7 @@ func (this *AuthController) RoleDelete(){
 
 	} else {
 
-		role := models.AuthRole{Id:id}
-		if _, err := this.o.Delete(&role); err != nil {
+		if _, err := AuthRoleModel.Delete(id); err != nil {
 			this.renderJson(500, "删除失败", nil)
 
 		} else {
