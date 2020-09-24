@@ -3,23 +3,29 @@ package main
 
 import "fmt"
 
-// 全局定义数组
+// 主函数 go run array.go 会执行 main函数
+func main()  {
+
+	// 一维数组
+	oneArray()	// 知识点 这种没有 return 返回值的方式叫 "裸返回"
+
+	// 多维数组
+	muArray()
+
+	// 拷贝和传参
+	copyAndTransfer()
+
+	// 指针数组 和 数组指针
+	extension()
+}
+
+// 一维数组 全局变量
 var arr1 [5]int = [5]int{1, 2, 3}
 var arr2 = [5]int{1, 2, 3, 4, 5}
 var arr3 = [...]int{1, 2, 3, 4, 5, 6}
 var str = [5]string{3: "hello-world", 4: "tom"}
 
-// 主函数 go run array.go 会执行 main函数
-func main()  {
-
-	// 一纬数组
-	oneArray()	// 知识点 这种没有 return 返回值的方式叫 "裸返回"
-
-	// 多维数组
-	muArray()
-}
-
-// 一纬数组 散装英语
+// 一维数组 散装英语
 func oneArray(){
 
 	fmt.Println("一维数组------------------------START")
@@ -79,4 +85,69 @@ func muArray()  {
 	fmt.Println(muarr5)		// 输出 [[[3 3 3] [3 3 3]]]
 	fmt.Println("多维数组------------------------END")
 
+}
+
+// 拷贝和传参
+func copyAndTransfer()  {
+
+	// 知识点：*代表指针 &代表取址（取内存地址）
+	var arr5 [3]int
+	fmt.Printf("arr5 内存地址: %p\n", &arr5)
+
+	// 输出数组中的每一个值
+	for key, value := range arr5  {
+		fmt.Println("key:", key, " value:", value, "内存地址:", &arr5[key])
+	}
+
+	// 知识点：数组是值类型，赋值和传参会复制整个数组，而不是指针。因此改变副本的值，不会改变本身的值。
+	printArr(arr5)
+
+	// 输出 arr5 查看内容变化
+	fmt.Println("copyAndTransfer 方法中的数组：", arr5)
+
+	// go语言的赋值是值拷贝
+	arr6 := arr5
+	fmt.Printf("arr6 内存地址: %p\n", &arr6)
+
+	// 通过上面一系列的操作我们发现在传参的过程中系统会申请一个新的内存地址 证明了赋值和传参会复制整个数组
+}
+
+// 打印数组
+func printArr(arr [3]int){
+
+	fmt.Println("\n打印数组------------------------START")
+	fmt.Printf("arr  传参内存地址: %p\n", &arr)
+
+	for key, value := range arr  {
+		fmt.Println("key:", key, " value:", value, "内存地址:", &arr[key])
+
+		// 修改数组内容
+		arr[key] = key
+	}
+
+	fmt.Println("printArr 方法中修改后的数组：", arr)
+	fmt.Println("打印数组------------------------END\n ")
+}
+
+// 指针数组 和 数组指针
+func extension()  {
+
+	// 定义两个变量
+	x,y := 1, 2
+
+	// 定义数组
+	var arr =  [...]int{5:2}
+
+	//数组指针
+	var pf *[6]int = &arr
+
+	//指针数组
+	pfArr := [...]*int{&x,&y}
+	fmt.Println(pf)			// 输出  &[0 0 0 0 0 2]
+	fmt.Println(pfArr)		// 输出	[0xc000134008 0xc000134010] 两个内容地址
+
+	// 简单理解
+	// 数组指针 pf 的值得到的是一个指向 arr 地址的一个指针
+	// 指针数组 pfArr 则是一个数组内的元素全是指针类型
+	// 关于 指针 相关知识可以在后续文章中学习 这里大致了解一下即可
 }
