@@ -132,6 +132,8 @@ func printArr(arr [3]int){
 // 指针数组 和 数组指针
 func extension()  {
 
+	// 指针数组 [n]*T，数组指针 *[n]T。
+
 	// 定义两个变量
 	x,y := 1, 2
 
